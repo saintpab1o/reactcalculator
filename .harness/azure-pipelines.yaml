@@ -4,6 +4,12 @@ pipeline:
   projectIdentifier: default_project
   orgIdentifier: default
   tags: {}
+  properties:
+    ci:
+      codebase:
+        connectorRef: gitconnect
+        repoName: reactcalculator
+        build: <+input>
   stages:
     - stage:
         name: Build
@@ -12,26 +18,29 @@ pipeline:
         spec:
           cloneCodebase: true
           infrastructure:
-            type: Cloud
+            type: KubernetesDirect
             spec:
-              size: Small
+              connectorRef: harnessImage
+              namespace: harness-test
+          failureStrategies:
+            - onFailure:
+                errors:
+                  - AllErrors
+                action:
+                  type: Abort
           execution:
             steps:
               - step:
                   type: Run
-                  identifier: install_node
-                  name: Install Node.js
+                  identifier: build_javascript_app
+                  name: Build JavaScript App
                   spec:
+                    connectorRef: harnessImage
+                    image: node:latest
                     shell: Sh
-                    command: |
-                      curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
-                      sudo apt-get install -y nodejs
-              - step:
-                  type: Run
-                  identifier: npm_build
-                  name: npm install and build
-                  spec:
-                    shell: Sh
-                    command: |
+                    command: |-
+                      echo "Welcome to Harness CI"
+                      node --version
                       npm install
-                      npm run build
+                      npm run build --if-present
+                      npm test
