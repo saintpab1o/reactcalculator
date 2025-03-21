@@ -1,26 +1,37 @@
-# Node.js
-# Build a general Node.js project with npm.
-# Add steps that analyze code, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
-
-trigger:
-- master
-
-pool:
-  vmImage: ubuntu-latest
-
-steps:
-- task: NodeTool@0
-  inputs:
-    versionSpec: '10.x'
-  displayName: 'Install Node.js'
-
-- script: |
-    npm install
-    npm run build
-  displayName: 'npm install and build'
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'build'
-    projects: 'fsdfsd'
-    arguments: '1111'
+pipeline:
+  name: Node.js Build
+  identifier: nodejs_build
+  projectIdentifier: default_project
+  orgIdentifier: default
+  tags: {}
+  stages:
+    - stage:
+        name: Build
+        identifier: build
+        type: CI
+        spec:
+          cloneCodebase: true
+          infrastructure:
+            type: Cloud
+            spec:
+              size: Small
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  identifier: install_node
+                  name: Install Node.js
+                  spec:
+                    shell: Sh
+                    command: |
+                      curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
+                      sudo apt-get install -y nodejs
+              - step:
+                  type: Run
+                  identifier: npm_build
+                  name: npm install and build
+                  spec:
+                    shell: Sh
+                    command: |
+                      npm install
+                      npm run build
