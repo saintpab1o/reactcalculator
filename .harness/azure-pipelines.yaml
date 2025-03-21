@@ -20,7 +20,7 @@ pipeline:
           infrastructure:
             type: KubernetesDirect
             spec:
-              connectorRef: harnessImage
+              connectorRef: account.harnessImage
               namespace: harness-test
           failureStrategies:
             - onFailure:
@@ -35,7 +35,7 @@ pipeline:
                   identifier: build_javascript_app
                   name: Build JavaScript App
                   spec:
-                    connectorRef: harnessImage
+                    connectorRef: account.harnessImage
                     image: node:latest
                     shell: Sh
                     command: |-
